@@ -6,22 +6,31 @@ open Thoth.Fetch
 open Shared
 
 type Model =
-    { Hello: string }
+    {
+        Todos: Todo list
+        Error: string
+    }
 
 type Msg =
-    | GotHello of string
+    | Load
+    | Refresh of Todo list
+    | Error of exn
 
 let init() =
-    let model : Model =
-        { Hello = "" }
-    let getHello() = Fetch.get<unit, string> Route.hello
-    let cmd = Cmd.OfPromise.perform getHello () GotHello
-    model, cmd
+    { Todos = []; Error = "" }, Cmd.ofMsg Load
+
 
 let update msg model =
     match msg with
-    | GotHello hello ->
-        { model with Hello = hello }, Cmd.none
+    | Load ->
+        let loadTodos() = Fetch.get<unit, Todo list> Route.todos
+        let cmd = Cmd.OfPromise.either loadTodos () Refresh Error
+        model, cmd
+    | Refresh todos ->
+        { model with Todos = todos}, Cmd.none
+    | Error err ->
+        { model with Error = err.Message }, Cmd.none
+        
 
 open Fable.React
 open Fable.React.Props
@@ -30,7 +39,10 @@ let view model dispatch =
     div [ Style [ TextAlign TextAlignOptions.Center; Padding 40 ] ] [
         div [] [
             img [ Src "favicon.png" ]
-            h1 [] [ str "Blog" ]
-            h2 [] [ str model.Hello ]
+            h1 [] [ str (sprintf "Todos: %i" model.Todos.Length) ]
+            match model.Error with
+            | "" -> div [] []
+            | s -> p [ ] [ str s ]
+            div [] ( model.Todos |> List.map (fun each -> p [] [str each.Description]))
         ]
     ]

@@ -1,4 +1,11 @@
 namespace Shared
 
+type Todo =
+    {
+        Id: int
+        Description: string
+        Completed: bool
+    }
+
 module Route =
-    let hello = "/api/hello"
+    let todos = "/api/todos"

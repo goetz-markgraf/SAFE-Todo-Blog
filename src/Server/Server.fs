@@ -5,9 +5,22 @@ open Saturn
 
 open Shared
 
+let mutable database = [
+    {
+        Id = 1
+        Description = "Read all todos"
+        Completed = true
+    }
+    {
+        Id = 2
+        Description = "Add a new todo"
+        Completed = false
+    }
+]
+
 let webApp =
     router {
-        get Route.hello (json "Hello from SAFE!")
+        get Route.todos (json database)
     }
 
 let app =
