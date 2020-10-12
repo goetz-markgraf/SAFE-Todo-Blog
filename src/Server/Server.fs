@@ -13,6 +13,9 @@ module Database =
     let getAll () =
         database
 
+    let getAllSorted () =
+        database |> List.sortBy (fun each -> each.Id)
+
     let init() =
         database <- [
         {
@@ -62,13 +65,13 @@ module Todos =
 let webApp =
     router {
         get Route.todos (fun next ctx ->
-            json (Database.getAll()) next ctx)
+            json (Database.getAllSorted()) next ctx)
         post Route.todos (fun next ctx -> 
             task {
                 let! description = ctx.BindModelAsync<string>()
                 let model = Todos.addTodo (Database.getAll()) description
                 Database.save model
-                return! json model next ctx
+                return! json (Database.getAllSorted()) next ctx
             })
     }
 
