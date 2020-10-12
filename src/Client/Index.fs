@@ -18,6 +18,7 @@ type Msg =
     | Error of exn
     | DescriptionChanged of string
     | AddTodo
+    | ToggleCompleted of int
 
 let init() =
     { Todos = []; Error = ""; Description = "" }, Cmd.ofMsg Load
@@ -40,6 +41,11 @@ let update msg model =
         let newModel description = Fetch.post<string, Todo list> (Route.todos, description)
         let cmd = Cmd.OfPromise.either newModel model.Description Refresh Error
         { model with Description = "" } , cmd
+    | ToggleCompleted id ->
+        let url = sprintf "/api/todos/%i/toggle_complete" id
+        let newModel id = Fetch.put<unit, Todo list> url
+        let cmd = Cmd.OfPromise.either newModel () Refresh Error
+        model, cmd
         
 
 open Fable.React
@@ -53,9 +59,20 @@ let errorView model =
     | s -> p [ ] [ str s ]
 
 
+
+let todoView todo dispatch =
+    div [] [
+        input [
+            Type "checkbox"
+            Checked todo.Completed
+            OnClick (fun _ -> todo.Id |> ToggleCompleted |> dispatch)
+        ]
+        label [ ] [str todo.Description]
+    ]
+
 let todosView model dispatch =
     div [] ( model.Todos |> List.map (fun each ->
-        p [ ] [str each.Description]))
+        todoView each dispatch))
 
 
 let descriptionView model dispatch =

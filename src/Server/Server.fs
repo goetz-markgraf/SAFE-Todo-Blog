@@ -31,6 +31,11 @@ module Database =
         {
             Id = 3
             Description = "Toggle State"
+            Completed = true
+        }
+        {
+            Id = 4
+            Description = "Style UI"
             Completed = false
         }
     ]
@@ -55,7 +60,12 @@ module Todos =
         let id = newId model
         let newTodo = { Description = description; Completed = false; Id = id }
         newTodo :: model
-        
+
+    let toggleComplete model id =
+        let toggle todo =
+            if id <> todo.Id then todo
+            else { todo with Completed = not todo.Completed}
+        model |> List.map toggle
 
 
 
@@ -73,7 +83,13 @@ let webApp =
                 Database.save model
                 return! json (Database.getAllSorted()) next ctx
             })
-    }
+        putf "/api/todos/%i/toggle_complete" (fun id next ctx ->
+            task {
+                let model = Todos.toggleComplete (Database.getAll()) id
+                Database.save model
+                return! json (Database.getAllSorted()) next ctx
+            })
+}
 
 let app =
     application {
