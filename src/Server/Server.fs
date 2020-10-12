@@ -20,7 +20,7 @@ let mutable database = [
 
 let webApp =
     router {
-        get Route.todos (json database)
+        get Route.todos (fun next ctx -> json database next ctx)
     }
 
 let app =
