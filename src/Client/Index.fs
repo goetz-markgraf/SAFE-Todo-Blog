@@ -51,6 +51,7 @@ let update msg model =
 open Fable.React
 open Fable.React.Props
 open Fable.Core.JsInterop
+open Fulma
 
 
 let errorView model =
@@ -82,8 +83,9 @@ let descriptionView model dispatch =
             Value (model.Description)
             OnChange (fun ev -> !!ev.target?value |> DescriptionChanged |> dispatch)
         ]
-        button [
-            OnClick (fun _ -> AddTodo |> dispatch)
+        Button.button [
+            Button.Size IsLarge
+            Button.Props [ OnClick (fun _ -> AddTodo |> dispatch) ]
         ] [ str "Add" ]
     ]
 
