@@ -51,6 +51,7 @@ let update msg model =
 open Fable.React
 open Fable.React.Props
 open Fable.Core.JsInterop
+open Fulma
 
 
 let errorView model =
@@ -61,40 +62,78 @@ let errorView model =
 
 
 let todoView todo dispatch =
-    div [] [
-        input [
-            Type "checkbox"
-            Checked todo.Completed
-            OnClick (fun _ -> todo.Id |> ToggleCompleted |> dispatch)
+    Level.level [] [
+        Level.left [] [
+            Level.item [] [
+                input [
+                    Type "checkbox"
+                    Checked todo.Completed
+                    OnClick (fun _ -> todo.Id |> ToggleCompleted |> dispatch)
+                ]
+            ]
+            Level.item [] [
+                div [
+                    match todo.Completed with
+                    | true -> Style [ CSSProp.TextDecoration "line-through"  ]
+                    | false -> Style []
+                ] [
+                    Label.label [ Label.Modifiers [
+                        if todo.Completed then
+                            Modifier.TextColor IsSuccess
+                            Modifier.TextWeight TextWeight.Normal
+                    ] ] [ str todo.Description ]
+                ]
+            ]
         ]
-        label [ ] [str todo.Description]
     ]
 
 let todosView model dispatch =
-    div [] ( model.Todos |> List.map (fun each ->
+    Box.box' [] ( model.Todos |> List.map (fun each ->
         todoView each dispatch))
 
 
 let descriptionView model dispatch =
-    div [] [
-        input [
-            Placeholder "What is to be done?"
-            Value (model.Description)
-            OnChange (fun ev -> !!ev.target?value |> DescriptionChanged |> dispatch)
+    Columns.columns [ ] [
+
+        Column.column [ ] [
+            Input.text [
+                Input.Placeholder "What is to be done?"
+                Input.IsRounded
+                Input.Props [
+                    Value (model.Description)
+                    OnChange (fun ev -> !!ev.target?value |> DescriptionChanged |> dispatch)
+                ]
+            ]
         ]
-        button [
-            OnClick (fun _ -> AddTodo |> dispatch)
-        ] [ str "Add" ]
+
+        Column.column [ Column.Width (Screen.All, Column.IsNarrow) ] [
+            Button.button [
+                Button.Color IsPrimary
+                Button.Props [
+                    OnClick (fun _ -> AddTodo |> dispatch)
+                ]
+            ] [ str "Add" ]
+        ]
+
     ]
 
 let view model dispatch =
-    div [ Style [ TextAlign TextAlignOptions.Center; Padding 40 ] ] [
-        div [] [
-            img [ Src "favicon.png" ]
-            h1 [] [ str (sprintf "Todos: %i" model.Todos.Length) ]
-            
-            descriptionView model dispatch
-            errorView model
-            todosView model dispatch            
+    div [ ] [
+        Columns.columns [  ] [
+            Column.column [
+                Column.Width (Screen.All, Column.IsHalf)
+                Column.Offset (Screen.All, Column.IsOneQuarter)
+            ] [
+                Section.section [
+                    Section.Props [ Style [ TextAlign TextAlignOptions.Center ] ]
+                ] [ 
+                    img [ Src "favicon.png" ]
+                    Heading.h1 [] [ str "Todo list" ]
+                ]
+                
+                descriptionView model dispatch
+                errorView model
+                todosView model dispatch            
+            ]
         ]
     ]
