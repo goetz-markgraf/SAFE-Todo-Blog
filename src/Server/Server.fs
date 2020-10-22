@@ -5,7 +5,7 @@ open Saturn
 
 open Shared
 
-let mutable database = [
+let database = [
     {
         Id = 1
         Description = "Read all todos"
