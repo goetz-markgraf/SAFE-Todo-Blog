@@ -1,29 +1,26 @@
-namespace Test
+module Tests
 
-open Microsoft.VisualStudio.TestTools.UnitTesting
+open Xunit
 
-open Server
 open Shared
+open Server
 
-[<TestClass>]
-type TestClass () =
+[<Fact>]
+let ``create new Id`` () =
+    let model = [{ Id = 2; Description = "Todo 1"; Completed = false}]
+    let result = Todos.newId model
+    Assert.Equal(3, result)
 
-    [<TestMethod>]
-    member this.CreateNewId () =
-        let model = [{ Id = 2; Description = "Todo 1"; Completed = false}]
-        let result = Todos.newId model
-        Assert.AreEqual(3, result)
+[<Fact>]
+let ``add todo`` () =
+    let model = [{ Id = 1; Description = "Todo 1"; Completed = false}]
+    let result = Todos.addTodo model "Todo 2"
+    let expected = { Id = 2; Description = "Todo 2"; Completed = false}
+    Assert.Contains(expected, result)
 
-    [<TestMethod>]
-    member this.AddTodo () =
-        let model = [{ Id = 1; Description = "Todo 1"; Completed = false}]
-        let result = Todos.addTodo model "Todo 2"
-        printfn "Model %A" result
-        Assert.AreEqual(2, List.length result)
-    
-    [<TestMethod>]
-    member this.``Shall toggle Complete State`` () =
-        let model = [{ Id = 1; Description = "Description"; Completed = false}]
-        let result = Todos.toggleComplete model 1
-        let expected = [{ Id = 1; Description = "Description"; Completed = true}]
-        Assert.AreEqual(expected, result)
+[<Fact>]
+let ``Shall toggle Complete State`` () =
+    let model = [{ Id = 1; Description = "Description"; Completed = false}]
+    let result = Todos.toggleComplete model 1
+    let expected = [{ Id = 1; Description = "Description"; Completed = true}]
+    Assert.Equal<Todo list>(expected, result)
