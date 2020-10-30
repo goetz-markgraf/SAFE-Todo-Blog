@@ -83,7 +83,7 @@ let webApp =
                 Database.save model
                 return! json (Database.getAllSorted()) next ctx
             })
-        putf "/api/todos/%i/toggle_complete" (fun id next ctx ->
+        patchf "/api/todos/%i/toggle_complete" (fun id next ctx ->
             task {
                 let model = Todos.toggleComplete (Database.getAll()) id
                 Database.save model

@@ -43,7 +43,7 @@ let update msg model =
         { model with Description = "" } , cmd
     | ToggleCompleted id ->
         let url = sprintf "/api/todos/%i/toggle_complete" id
-        let newModel id = Fetch.put<unit, Todo list> url
+        let newModel id = Fetch.patch<unit, Todo list> url
         let cmd = Cmd.OfPromise.either newModel () Refresh Error
         model, cmd
         
