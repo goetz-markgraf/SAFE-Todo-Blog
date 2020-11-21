@@ -101,7 +101,6 @@ let descriptionView model dispatch =
                 Input.IsRounded
                 Input.Value (model.Description)
                 Input.OnChange (fun ev -> !!ev.target?value |> DescriptionChanged |> dispatch)
-                ]
             ]
         ]
 
