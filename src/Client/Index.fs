@@ -99,9 +99,8 @@ let descriptionView model dispatch =
             Input.text [
                 Input.Placeholder "What is to be done?"
                 Input.IsRounded
-                Input.Props [
-                    Value (model.Description)
-                    OnChange (fun ev -> !!ev.target?value |> DescriptionChanged |> dispatch)
+                Input.Value (model.Description)
+                Input.OnChange (fun ev -> !!ev.target?value |> DescriptionChanged |> dispatch)
                 ]
             ]
         ]
@@ -109,9 +108,7 @@ let descriptionView model dispatch =
         Column.column [ Column.Width (Screen.All, Column.IsNarrow) ] [
             Button.button [
                 Button.Color IsPrimary
-                Button.Props [
-                    OnClick (fun _ -> AddTodo |> dispatch)
-                ]
+                Button.OnClick (fun _ -> AddTodo |> dispatch)
             ] [ str "Add" ]
         ]
 
